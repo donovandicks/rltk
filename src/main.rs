@@ -1,6 +1,7 @@
 use rltk::{GameState, Rltk, RGB};
 use rltk_app::{
-    components::{LeftMover, Position, Renderable},
+    components::{LeftMover, Player, Position, Renderable},
+    player_handler::get_player_input,
     systems::LeftWalker,
 };
 use specs::{Builder, Join, RunNow, World, WorldExt};
@@ -13,6 +14,7 @@ impl GameState for State {
     fn tick(&mut self, ctx: &mut Rltk) {
         ctx.cls();
 
+        get_player_input(&mut self.ecs, ctx);
         self.run_systems();
 
         let positions = self.ecs.read_storage::<Position>();
@@ -35,6 +37,7 @@ impl State {
         self.ecs.register::<Position>();
         self.ecs.register::<Renderable>();
         self.ecs.register::<LeftMover>();
+        self.ecs.register::<Player>();
     }
 
     fn generate_entities(&mut self) {
@@ -47,6 +50,7 @@ impl State {
                 fg: RGB::named(rltk::YELLOW),
                 bg: RGB::named(rltk::BLACK),
             })
+            .with(Player {})
             .build();
 
         // enemies
