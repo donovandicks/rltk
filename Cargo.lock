@@ -1451,20 +1451,20 @@ checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
 
 [[package]]
 name = "rltk"
-version = "0.1.0"
-dependencies = [
- "rltk 0.8.1",
- "specs",
- "specs-derive",
-]
-
-[[package]]
-name = "rltk"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1c83076f8174384edf79d3f4a91934b8c0e1feed6eed943608d54af790f0a7dd"
 dependencies = [
  "bracket-lib",
+]
+
+[[package]]
+name = "rltk-app"
+version = "0.1.0"
+dependencies = [
+ "rltk",
+ "specs",
+ "specs-derive",
 ]
 
 [[package]]
