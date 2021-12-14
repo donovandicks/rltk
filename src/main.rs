@@ -1,10 +1,14 @@
 use rltk::{GameState, Rltk, RGB};
 use rltk_app::{
     components::{LeftMover, Player, Position, Renderable},
+    map::{draw_map, new_map, TileType},
     player_handler::get_player_input,
     systems::LeftWalker,
 };
 use specs::{Builder, Join, RunNow, World, WorldExt};
+
+pub const WIDTH: i32 = 80;
+pub const HEIGHT: i32 = 50;
 
 struct State {
     ecs: World,
@@ -14,8 +18,11 @@ impl GameState for State {
     fn tick(&mut self, ctx: &mut Rltk) {
         ctx.cls();
 
-        get_player_input(&mut self.ecs, ctx);
+        get_player_input(&mut self.ecs, ctx, WIDTH, HEIGHT);
         self.run_systems();
+
+        let map = self.ecs.fetch::<Vec<TileType>>();
+        draw_map(&map, ctx, WIDTH);
 
         let positions = self.ecs.read_storage::<Position>();
         let renderables = self.ecs.read_storage::<Renderable>();
@@ -33,6 +40,10 @@ impl State {
         self.ecs.maintain();
     }
 
+    fn insert_resources(&mut self) {
+        self.ecs.insert(new_map(WIDTH, HEIGHT));
+    }
+
     fn register_components(&mut self) {
         self.ecs.register::<Position>();
         self.ecs.register::<Renderable>();
@@ -44,7 +55,10 @@ impl State {
         // player
         self.ecs
             .create_entity()
-            .with(Position { x: 40, y: 25 })
+            .with(Position {
+                x: WIDTH / 2,
+                y: HEIGHT / 2,
+            })
             .with(Renderable {
                 glyph: rltk::to_cp437('@'),
                 fg: RGB::named(rltk::YELLOW),
@@ -79,6 +93,7 @@ fn build_context() -> rltk::Rltk {
 
 fn init_ecs() -> State {
     let mut gs = State { ecs: World::new() };
+    gs.insert_resources();
     gs.register_components();
     gs.generate_entities();
 
